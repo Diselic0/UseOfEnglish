@@ -10,7 +10,7 @@ def create_words_to_remove_list():
         word = input("")
         if not word:
             break
-        words_to_remove.append(word)
+        words_to_remove.append(word.lower())
     return words_to_remove
 
 def search_for_words(file_name, target_word_list):
@@ -23,8 +23,9 @@ def search_for_words(file_name, target_word_list):
 
             for sentence in sentences:
                 for target_word in target_word_list:
-                    if target_word in sentence:
-                        found_sentences.append(sentence.strip())
+                    if target_word in one_sentence:
+                        found_sentences.append(one_sentence.strip())
+            found_sentences = list(set(found_sentences)) #set deletes the duplicated stings in the list
 
             if found_sentences:
                 print(f"Frases con la paabra '{target_word}' :")
@@ -52,34 +53,20 @@ def get_wiki_text(titulo):
     dirty_lines = page.content.split('. ')
 
 
-    for line in dirty_lines:   #If the line is NOT empty
-        for i in range(len(line)-1):
-            if line[i] == "\r":
-                line.replace(line[i], "")
 
-            if line[i] == line[i+1] and line[i] == "=":
-                for j in range(len(line)-1):
-                    if line[j] == line[j+1] and line[i] == "=":
-                        line.replace(line[j], "")
-                        break
-                line.replace(line[j], "")
 
-    with open('output_cleaned.txt', 'w', encoding='utf-8') as filelile:
-        for line in dirty_lines:
-            filelile.write(line)
-        filelile.close()
 
 def chek_correct_answer(target_word, answer):
     return target_word == answer
 def present_phrase_to_guess(target_word_list):
 
-    with open('output_cleaned.txt', 'r') as file:
-        sentences = file.readlines()
+    with open('output_cleaned.txt', 'r', encoding = 'utf-8') as file:
+        sentences = file.read().split(".")
         file.close()
     for line in sentences:
         for target_word in target_word_list:
             if target_word in line:
-                line.replace(target_word, '-----')
+                line = line.replace(target_word, '____')
                 print(line)
 
 
@@ -91,4 +78,4 @@ titulo = input('escribe el título\n')
 get_wiki_text(titulo)
 target_words = create_words_to_remove_list()
 search_for_words('output_cleaned.txt', target_words)
-
+present_phrase_to_guess(target_words)
