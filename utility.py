@@ -3,6 +3,7 @@ import wikipedia
 
 #Creates a list wehit the words the user wants to practice with
 import myOpenAi
+import random
 
 
 def create_words_to_remove_list():
@@ -34,6 +35,7 @@ def search_for_words(file_name, target_word_list):
     except FileNotFoundError as e:
         print("Error", e)
     return found_sentences
+
 
 
 
@@ -124,6 +126,62 @@ def present_guess_repeat_routine(tartget_word_list, found_sentences):
 
         cont = cont + 1
 
+
+
+#New shiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiit
+
+def generateWikiFiles():
+
+    index = 0
+    wikiTitles = wikipedia.random(10)
+
+    for title in wikiTitles:
+        getWikiText(f'{index}wikiText.txt', title)
+        index = index +1
+
+
+
+
+def getWikiText(fileId, title):
+
+    while True:
+        try:
+            wiki = wikipedia.search(title, 1, False)
+            page = wikipedia.page(wiki[0])
+
+        except wikipedia.DisambiguationError as e:
+            newTitle = random.choice(e.options)
+            title = newTitle
+
+        except wikipedia.PageError as e2:
+            newTitle = wikipedia.random(1)
+            title = newTitle
+
+        else:
+            break
+
+    try:
+        with open('rawWiki.txt', 'w', encoding='utf-8') as file:
+            file.write('') #empty the content of the file
+            file.writelines(page.content)
+            file.close()
+
+        # filter wiki text:
+        dirty_lines = page.content.split('. ')
+        new_str = ''
+        for one_line in dirty_lines:
+            if "==" in one_line:
+                continue
+            new_str += one_line
+
+        new_str = new_str.replace("\n", "")
+
+        with open(fileId, 'w', encoding='utf-8') as filelile:
+            for line in new_str:
+                filelile.write(line)
+            filelile.close()
+    except FileNotFoundError as e:
+        print(f'file {fileId} not found\n')
 
 
 
